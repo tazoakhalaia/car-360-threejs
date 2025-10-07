@@ -205,7 +205,7 @@ const camera = new THREE.OrthographicCamera(
 );
 
 // --- Lights ---
-const dirLight = new THREE.DirectionalLight(0xffffff, 0.0001);
+const dirLight = new THREE.DirectionalLight(0xffffff, 1);
 dirLight.position.set(5, 20, 20);
 dirLight.castShadow = true;
 dirLight.shadow.mapSize.width = 1024;
@@ -353,6 +353,8 @@ function checkLoadingComplete() {
 // --- Animate ---
 function animate() {
   requestAnimationFrame(animate);
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = -0.5;
   controls.update();
   composer.render();
 }
