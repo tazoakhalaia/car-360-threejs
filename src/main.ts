@@ -162,10 +162,26 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { HDRLoader } from "three/examples/jsm/Addons.js";
 
+// --- HTML Loader ---
+const loaderDiv = document.createElement("div");
+loaderDiv.id = "loader";
+loaderDiv.style.position = "fixed";
+loaderDiv.style.top = "0";
+loaderDiv.style.left = "0";
+loaderDiv.style.width = "100%";
+loaderDiv.style.height = "100%";
+loaderDiv.style.background = "#000"; // Fully opaque black
+loaderDiv.style.display = "flex";
+loaderDiv.style.alignItems = "center";
+loaderDiv.style.justifyContent = "center";
+loaderDiv.style.color = "#fff";
+loaderDiv.style.fontSize = "2em";
+loaderDiv.innerText = "Loading...";
+document.body.appendChild(loaderDiv);
+
+// --- Scene & Renderer ---
 const app = document.getElementById("app") as HTMLElement;
-
 const scene = new THREE.Scene();
-
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -189,9 +205,6 @@ const camera = new THREE.OrthographicCamera(
 );
 
 // --- Lights ---
-// const ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
-// scene.add(ambientLight);
-
 const dirLight = new THREE.DirectionalLight(0xffffff, 0.0001);
 dirLight.position.set(5, 20, 20);
 dirLight.castShadow = true;
@@ -201,21 +214,17 @@ dirLight.shadow.camera.near = 0.5;
 dirLight.shadow.camera.far = 50;
 scene.add(dirLight);
 
-// const fillLight = new THREE.DirectionalLight(0xffffff, 0.2);
-// fillLight.position.set(-10, 5, -10);
-// scene.add(fillLight);
-
-// const hemiLight = new THREE.HemisphereLight(0xffffff, 0x202020, 0.5);
-// scene.add(hemiLight);
-
-// --- HDR ---
+// --- HDR Loader ---
 const rgbeLoader = new HDRLoader();
+let hdrLoaded = false;
 rgbeLoader.load(
   "public/2.hdr",
   (texture) => {
     texture.mapping = THREE.EquirectangularReflectionMapping;
     scene.background = texture;
     scene.environment = texture;
+    hdrLoaded = true;
+    checkLoadingComplete();
   },
   undefined,
   (err) => console.error("HDR load error:", err)
@@ -228,8 +237,7 @@ floorTexture.wrapS = THREE.RepeatWrapping;
 floorTexture.wrapT = THREE.RepeatWrapping;
 floorTexture.repeat.set(3, 3);
 
-let circleRadius = 30;
-const circleGeometry = new THREE.CircleGeometry(circleRadius, 128);
+const circleGeometry = new THREE.CircleGeometry(30, 128);
 const circleMaterial = new THREE.MeshStandardMaterial({
   map: floorTexture,
   roughness: 0.9,
@@ -251,12 +259,13 @@ controls.enablePan = false;
 controls.enableZoom = true;
 controls.minZoom = 4;
 controls.maxZoom = 6;
-// controls.minPolarAngle = Math.PI / 3;
 controls.maxPolarAngle = Math.PI / 2.2;
 
 // --- Load Model ---
 const loader = new GLTFLoader();
 let car: THREE.Group;
+let modelLoaded = false;
+
 loader.load(
   "public/3D_Model_Car.gltf",
   (gltf) => {
@@ -287,10 +296,14 @@ loader.load(
     });
 
     scene.add(car);
+
+    // Camera initial position
     const offset = new THREE.Vector3(6, 4, 15);
     camera.position.copy(car.position).add(offset);
-    // controls.target.copy(car.position);
     controls.update();
+
+    modelLoaded = true;
+    checkLoadingComplete();
   },
   undefined,
   (error) => console.log("Model load error:", error)
@@ -322,15 +335,20 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   composer.setSize(window.innerWidth, window.innerHeight);
 
-  // Adjust camera offset if car exists
   if (car) {
     const offset = new THREE.Vector3(6 * aspect, 4, 15 * aspect);
     camera.position.copy(car.position).add(offset);
     controls.update();
   }
 }
-
 window.addEventListener("resize", onWindowResize, false);
+
+// --- Loader Check ---
+function checkLoadingComplete() {
+  if (hdrLoaded && modelLoaded) {
+    loaderDiv.style.display = "none";
+  }
+}
 
 // --- Animate ---
 function animate() {
