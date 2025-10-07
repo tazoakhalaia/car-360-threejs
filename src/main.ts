@@ -160,7 +160,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
-import { HDRLoader, SAOPass } from "three/examples/jsm/Addons.js";
+import { HDRLoader } from "three/examples/jsm/Addons.js";
 
 const app = document.getElementById("app") as HTMLElement;
 
@@ -188,12 +188,11 @@ const camera = new THREE.OrthographicCamera(
   100
 );
 
-
 // --- Lights ---
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
-scene.add(ambientLight);
+// const ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
+// scene.add(ambientLight);
 
-const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.0001);
 dirLight.position.set(5, 20, 20);
 dirLight.castShadow = true;
 dirLight.shadow.mapSize.width = 1024;
@@ -202,17 +201,17 @@ dirLight.shadow.camera.near = 0.5;
 dirLight.shadow.camera.far = 50;
 scene.add(dirLight);
 
-const fillLight = new THREE.DirectionalLight(0xffffff, 0.2);
-fillLight.position.set(-10, 5, -10);
-scene.add(fillLight);
+// const fillLight = new THREE.DirectionalLight(0xffffff, 0.2);
+// fillLight.position.set(-10, 5, -10);
+// scene.add(fillLight);
 
-const hemiLight = new THREE.HemisphereLight(0xffffff, 0x202020, 0.5);
-scene.add(hemiLight);
+// const hemiLight = new THREE.HemisphereLight(0xffffff, 0x202020, 0.5);
+// scene.add(hemiLight);
 
 // --- HDR ---
 const rgbeLoader = new HDRLoader();
 rgbeLoader.load(
-  "public/qwantani_moonrise_puresky_4k.hdr",
+  "public/2.hdr",
   (texture) => {
     texture.mapping = THREE.EquirectangularReflectionMapping;
     scene.background = texture;
