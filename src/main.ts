@@ -232,10 +232,10 @@ rgbeLoader.load(
 
 // --- Floor ---
 const textureLoader = new THREE.TextureLoader();
-const floorTexture = textureLoader.load("public/floor.jpg");
+const floorTexture = textureLoader.load("public/Vol_3.png");
 floorTexture.wrapS = THREE.RepeatWrapping;
 floorTexture.wrapT = THREE.RepeatWrapping;
-floorTexture.repeat.set(3, 3);
+// floorTexture.repeat.set(2, 2);
 
 const circleGeometry = new THREE.CircleGeometry(30, 128);
 const circleMaterial = new THREE.MeshStandardMaterial({
