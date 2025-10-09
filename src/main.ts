@@ -1,5 +1,3 @@
-////////orthograph
-
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -8,7 +6,6 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { HDRLoader } from "three/examples/jsm/Addons.js";
 
-// --- HTML Loader ---
 const loaderDiv = document.createElement("div");
 loaderDiv.id = "loader";
 loaderDiv.style.position = "fixed";
@@ -16,7 +13,7 @@ loaderDiv.style.top = "0";
 loaderDiv.style.left = "0";
 loaderDiv.style.width = "100%";
 loaderDiv.style.height = "100%";
-loaderDiv.style.background = "#000"; // Fully opaque black
+loaderDiv.style.background = "#000";
 loaderDiv.style.display = "flex";
 loaderDiv.style.alignItems = "center";
 loaderDiv.style.justifyContent = "center";
@@ -25,7 +22,6 @@ loaderDiv.style.fontSize = "2em";
 loaderDiv.innerText = "Loading...";
 document.body.appendChild(loaderDiv);
 
-// --- Scene & Renderer ---
 const app = document.getElementById("app") as HTMLElement;
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -38,7 +34,6 @@ renderer.toneMappingExposure = 0.9;
 renderer.setClearColor("#EDEDED");
 app.appendChild(renderer.domElement);
 
-// --- Camera ---
 let aspect = window.innerWidth / window.innerHeight;
 let d = 12;
 const camera = new THREE.OrthographicCamera(
@@ -50,7 +45,6 @@ const camera = new THREE.OrthographicCamera(
   100
 );
 
-// --- Lights ---
 const dirLight = new THREE.DirectionalLight(0xffffff, 1);
 dirLight.position.set(5, 20, 20);
 dirLight.castShadow = true;
@@ -60,7 +54,6 @@ dirLight.shadow.camera.near = 0.5;
 dirLight.shadow.camera.far = 50;
 scene.add(dirLight);
 
-// --- HDR Loader ---
 const rgbeLoader = new HDRLoader();
 let hdrLoaded = false;
 rgbeLoader.load(
@@ -76,12 +69,10 @@ rgbeLoader.load(
   (err) => console.error("HDR load error:", err)
 );
 
-// --- Floor ---
 const textureLoader = new THREE.TextureLoader();
 const floorTexture = textureLoader.load("public/Vol_3.png");
 floorTexture.wrapS = THREE.RepeatWrapping;
 floorTexture.wrapT = THREE.RepeatWrapping;
-// floorTexture.repeat.set(2, 2);
 
 const circleGeometry = new THREE.CircleGeometry(30, 128);
 const circleMaterial = new THREE.MeshStandardMaterial({
@@ -95,10 +86,8 @@ circle.receiveShadow = true;
 circle.position.set(0, -1, 0);
 scene.add(circle);
 
-// --- Fog ---
 scene.fog = new THREE.Fog("#d1d1d1", 20, 30);
 
-// --- Controls ---
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.enablePan = false;
@@ -107,7 +96,6 @@ controls.minZoom = 4;
 controls.maxZoom = 6;
 controls.maxPolarAngle = Math.PI / 2.2;
 
-// --- Load Model ---
 const loader = new GLTFLoader();
 let car: THREE.Group;
 let modelLoaded = false;
@@ -142,7 +130,6 @@ loader.load(
 
     scene.add(car);
 
-    // Camera initial position
     const offset = new THREE.Vector3(6, 4, 15);
     camera.position.copy(car.position).add(offset);
     controls.update();
@@ -156,7 +143,7 @@ loader.load(
 
 function scaleOnResize() {
   console.log(window.innerWidth);
-  
+
   if (window.innerWidth < 1000) {
     car.scale.set(0.7, 0.7, 0.7);
     circle.position.set(0, -1.15, 0);
@@ -169,7 +156,6 @@ function scaleOnResize() {
 
 window.addEventListener("resize", scaleOnResize);
 
-// --- Postprocessing ---
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 
@@ -181,7 +167,6 @@ const bloomPass = new UnrealBloomPass(
 );
 composer.addPass(bloomPass);
 
-// --- Responsive ---
 function onWindowResize() {
   aspect = window.innerWidth / window.innerHeight;
   camera.left = -d * aspect;
@@ -203,14 +188,12 @@ function onWindowResize() {
 }
 window.addEventListener("resize", onWindowResize, false);
 
-// --- Loader Check ---
 function checkLoadingComplete() {
   if (hdrLoaded && modelLoaded) {
     loaderDiv.style.display = "none";
   }
 }
 
-// --- Animate ---
 function animate() {
   requestAnimationFrame(animate);
   controls.autoRotate = true;
