@@ -116,8 +116,7 @@ loader.load(
   "public/3D_Model_Car.gltf",
   (gltf) => {
     car = gltf.scene;
-    car.scale.set(2, 2, 2);
-
+    scaleOnResize();
     const box = new THREE.Box3().setFromObject(car);
     const center = new THREE.Vector3();
     box.getCenter(center);
@@ -154,6 +153,21 @@ loader.load(
   undefined,
   (error) => console.log("Model load error:", error)
 );
+
+function scaleOnResize() {
+  console.log(window.innerWidth);
+  
+  if (window.innerWidth < 1000) {
+    car.scale.set(0.7, 0.7, 0.7);
+    circle.position.set(0, -1.15, 0);
+    controls.minZoom = 3;
+    controls.maxZoom = 5;
+  } else {
+    car.scale.set(2, 2, 2);
+  }
+}
+
+window.addEventListener("resize", scaleOnResize);
 
 // --- Postprocessing ---
 const composer = new EffectComposer(renderer);
