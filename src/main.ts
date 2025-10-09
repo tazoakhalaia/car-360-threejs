@@ -101,7 +101,7 @@ let car: THREE.Group;
 let modelLoaded = false;
 
 loader.load(
-  "public/3D_Model_Car.gltf",
+  "public/car_02 gltf.gltf",
   (gltf) => {
     car = gltf.scene;
     scaleOnResize();
